@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "Tube Music Player",
+  "version": "0.1",
+  "description": "Plays music from YouTube",
+  "permissions": [
+    "https://www.googleapis.com/",
+    "http://www.googleapis.com/",
+    "identity"
+  ],
+  "browser_action": {
+    "default_title": "Tube Music Player",
+    "default_popup": "panel.html"
+  },
+  "oauth2": {
+    // client_id below is specifc to the application key. Follow the
+    // documentation to obtain one for your app.
+    "client_id": "904085981881-hc7lbkqffif298g3nginv5p1011k6g0f.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/youtube"]
+  }
+}

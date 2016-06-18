@@ -1,0 +1,118 @@
+<html>
+<head>
+	<script type="text/javascript">
+		prevKey = ''; 
+
+		var SHIFT = false;
+
+		var SHIFT_CODE = 16;
+		var QUESTION_UP = 191;
+		var EXCLAIM_UP = 49;
+
+		var code_to_char = {
+			191: '?',
+			49: '!',
+		};
+
+		var replacements = {
+			'?': '\u00BF',
+			'!': '\u00a1',
+		};
+
+		function shiftToggle(event) {
+			if(event.keyCode == SHIFT_CODE)
+				SHIFT = false;
+			console.log(SHIFT ? "on" : "off")
+		}
+
+		function latinFormatText(event) {
+			var curKey = event.keyCode;
+			if(SHIFT)
+				console.log("on")
+			if(curKey== 8) { // backspace
+				console.log("del")
+				inverseDelete();
+			} else if(SHIFT && (curKey == EXCLAIM_UP || curKey == QUESTION_UP)) {
+				console.log("ins")
+				inverseReplace(code_to_char[curKey]);
+			}
+			if(curKey==SHIFT_CODE)
+				SHIFT = true;
+			prevKey = curKey;
+
+		}
+
+		function inverseReplace(lastChar) {
+			var input = document.getElementById("inputText").value;
+			var breaks = [',', '.', ';', '-', '?', '!'];
+
+			// TODO:
+			/* This might have to be a -1 instead. Since we are 
+				intercepting the keystroke before it becomes input, we 
+				may not need to shift one left when scanning the text
+			 */
+			var prev = input.length - 1;
+
+
+			while(input.charAt(prev) == '?' || input.charAt(prev) == '!'){
+				prev--;
+			}
+			var i;
+			for(i = prev; i >= 0; i--) {
+				if( breaks.indexOf(input.charAt(i)) >= 0) {
+					break;
+				}
+			}
+			if(i < 0) {
+				i = -2;
+			}
+			input = insertChar(input, replacements[lastChar], i+2);
+			// Insert accents in here
+			// insertAccents();
+			document.getElementById('inputText').value = input;
+			console.log("ins_end");
+		}
+
+		function inverseDelete() {
+			var input = document.getElementById('inputText').value;
+			var lastChar = input.charAt(input.length - 1);		
+			if(lastChar != '?' && lastChar != '!')
+				return;
+			var index = input.length - 2;
+			var numSigns = 1;
+			var found = 0;
+			while(index > 0) {
+				console.log("scanning " +input.charAt(index))
+				if(input.charAt(index) == lastChar)
+					numSigns++;
+				else if(input.charAt(index) == replacements[lastChar])
+					found++;
+				if(numSigns - found == 0)
+					break;
+				index--;
+			}
+			if(index < 0)
+				index = 0;
+			if(input.charAt(index) != replacements[lastChar])
+				return;
+			input = removeChar(input, index + 1);
+			document.getElementById('inputText').value = input;
+		}
+
+		function insertChar(string, char, index) {
+			return string.slice(0, index) + char + string.slice(index, string.length);
+		}
+
+		function removeChar(string, index) {
+			if(index <= 0)
+				return string.slice(1, string.length);
+			return string.slice(0, index - 1) + string.slice(index, string.length);
+		}
+	</script>
+</head>
+<body>
+	<form>
+		<textarea style="width:400px;height:600px;" type="text" id="inputText" onkeydown="latinFormatText(event)" onkeyup="shiftToggle(event)"></textarea>
+	</form>
+</body>
+</html>
